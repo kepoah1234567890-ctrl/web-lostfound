@@ -11,8 +11,13 @@
     },
     "autoload": {
         "psr-4": {
+            "App\\": "app/",
             "App\\Providers\\": "app/Providers/"
-        }
+        },
+        "exclude-from-classmap": [
+            "/app/controllers/",
+            "/app/models/"
+        ]
     },
     "scripts": {
         "post-autoload-dump": [
