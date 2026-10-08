@@ -49,6 +49,7 @@ Di **Variables** pada layanan aplikasi, tambahkan:
 | `UPLOAD_PATH` | `/app/uploads/barang` |
 
 Ganti `MySQL` pada referensi variable dengan nama layanan MySQL Railway yang sebenarnya. Jangan menaruh nilai rahasia di file konfigurasi atau Git.
+Pastikan `APP_URL` memakai `https://`. Aplikasi juga memaksa HTTPS untuk URL Laravel dan helper aset pada environment `production`, supaya stylesheet, gambar, dan formulir tidak diblokir sebagai mixed content.
 
 Gunakan database yang disediakan layanan MySQL Railway melalui `${{MySQL.MYSQLDATABASE}}` untuk `DB_DATABASE`. Railway biasanya membatasi user ke database tersebut; tidak perlu membuat database bernama `lost_found`.
 

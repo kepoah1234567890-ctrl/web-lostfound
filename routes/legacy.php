@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\URL;
 
 URL::forceRootUrl((string) config('app.url'));
 
+if (app()->environment('production')) {
+    URL::forceScheme('https');
+}
+
 $applicationPath = trim((string) parse_url((string) config('app.url'), PHP_URL_PATH), '/');
 
 $serveFile = static function (string $file) {

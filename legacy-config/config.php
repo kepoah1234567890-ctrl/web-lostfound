@@ -123,10 +123,13 @@ define(
 |
 */
 
-define(
-    'BASE_URL',
-    rtrim(legacyEnv('APP_URL', 'http://localhost/web_lostfound'), '/')
-);
+$baseUrl = rtrim(legacyEnv('APP_URL', 'http://localhost/web_lostfound'), '/');
+
+if (strtolower(legacyEnv('APP_ENV')) === 'production') {
+    $baseUrl = preg_replace('/^http:\/\//i', 'https://', $baseUrl) ?? $baseUrl;
+}
+
+define('BASE_URL', $baseUrl);
 
 
 /*
