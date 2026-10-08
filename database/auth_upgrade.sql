@@ -15,6 +15,74 @@ PREPARE migration_statement FROM @migration_sql;
 EXECUTE migration_statement;
 DEALLOCATE PREPARE migration_statement;
 
+SET @has_password_set = (
+    SELECT COUNT(*)
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'users'
+      AND column_name = 'password_set'
+);
+
+SET @migration_sql = IF(
+    @has_password_set = 0,
+    'ALTER TABLE users ADD COLUMN password_set TINYINT(1) NOT NULL DEFAULT 1',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @migration_sql;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
+SET @has_password_changed_at = (
+    SELECT COUNT(*)
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'users'
+      AND column_name = 'password_changed_at'
+);
+
+SET @migration_sql = IF(
+    @has_password_changed_at = 0,
+    'ALTER TABLE users ADD COLUMN password_changed_at DATETIME NULL',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @migration_sql;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
+SET @has_reset_token = (
+    SELECT COUNT(*)
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'users'
+      AND column_name = 'reset_token'
+);
+
+SET @migration_sql = IF(
+    @has_reset_token = 0,
+    'ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) NULL',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @migration_sql;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
+SET @has_reset_expires = (
+    SELECT COUNT(*)
+    FROM information_schema.columns
+    WHERE table_schema = DATABASE()
+      AND table_name = 'users'
+      AND column_name = 'reset_expires'
+);
+
+SET @migration_sql = IF(
+    @has_reset_expires = 0,
+    'ALTER TABLE users ADD COLUMN reset_expires DATETIME NULL',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @migration_sql;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
 SET @has_avatar = (
     SELECT COUNT(*)
     FROM information_schema.columns

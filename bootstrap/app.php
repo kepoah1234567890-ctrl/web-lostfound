@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
             require base_path('routes/legacy.php');
         },
     )
+    ->withCommands([__DIR__.'/../app/Console/Commands'])
     ->withMiddleware(function (Middleware $middleware): void {})
     ->withExceptions(function (Exceptions $exceptions): void {
     })->create();

@@ -77,7 +77,31 @@ Initializer membuat tabel aplikasi yang belum ada dan tidak menghapus tabel atau
 
 Jangan jalankan `php artisan migrate:fresh --seed` pada Railway atau database berisi data penting. Perintah tersebut menghapus semua tabel sebelum membangunnya kembali, dan seeder hanya untuk data contoh/testing.
 
-Jika perlu memindahkan data dari database lokal, buat dump terbaru dan impor **setelah** memeriksa target Railway. Pastikan backup tidak berisi data yang tidak ingin dipublikasikan. Jangan mengimpor dump ke database berisi tabel/data yang sama karena dapat menyebabkan konflik atau duplikasi.
+Jika perlu memindahkan data dari database lokal, gunakan Artisan command `lostfound:import-data` dari komputer lokal melalui TCP Proxy Railway. File `.sql` dibaca dari komputer lokal, sedangkan koneksi Artisan diarahkan ke database Railway; file berisi data pribadi tidak perlu dimasukkan ke GitHub atau diunggah ke image aplikasi. Gunakan file **data-only** yang kompatibel dengan schema aplikasi, seperti `E:\lost_found_railway.sql` yang dibuat dari backup lama. Jangan langsung gunakan full dump `E:\lost_found.sql`, karena file itu berisi schema lama.
+
+Jalankan migration dahulu, lalu set koneksi proxy di PowerShell dari root proyek. Eusian host, port, database, jeung username tina TCP Proxy/Variables Railway:
+
+```powershell
+$env:DB_CONNECTION = "mysql"
+$env:DB_HOST = "<HOST_TCP_PROXY>"
+$env:DB_PORT = "<PORT_TCP_PROXY>"
+$env:DB_DATABASE = "<MYSQLDATABASE>"
+$env:DB_USERNAME = "<MYSQLUSER>"
+$securePassword = Read-Host "Railway MySQL password" -AsSecureString
+$env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $securePassword).Password
+
+php artisan migrate --force
+php artisan lostfound:import-data "E:\lost_found_railway.sql"
+```
+
+Command bakal mariksa jumlah data heula. Lamun database tujuan teu kosong, ulah diteruskeun lamun can nyieun backup. Pikeun ngahaja ngaganti data aplikasi Railway ku data tina file, tambahkeun `--replace`; paréntah bakal nembongkeun jumlah data ayeuna jeung ménta konfirmasi. Data dihapus jeung diimpor dina hiji transaksi, sarta bakal dibatalkeun lamun import gagal.
+
+```powershell
+php artisan lostfound:import-data "E:\lost_found_railway.sql" --replace
+Remove-Item Env:DB_PASSWORD
+```
+
+Ulah ngajalankeun import ti Railway service Console lamun file-na ngan aya di komputer lokal. Jalankeun command ti terminal lokal kalayan TCP Proxy aktif. Sanggeus réngsé, nonaktifkeun TCP Proxy publik lamun teu diperlukeun.
 
 Periksa setidaknya tabel `users`, `barang`, `laporan_hilang`, `klaim`, `pengembalian`, dan `aktivitas` (jika ada pada dump yang digunakan). Aplikasi lama memakai skema database tersebut secara langsung; jangan jalankan `php artisan migrate` sebagai pengganti impor skema.
 
