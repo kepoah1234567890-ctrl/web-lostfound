@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+/vendor/
+/database/lost_found.sql
+/database/lost_found_current_export.sql
+/database/update_passwords.php
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitkeep
+uploads/avatar/*
+!uploads/avatar/.gitkeep
+uploads/barang/*
+!uploads/barang/.gitkeep

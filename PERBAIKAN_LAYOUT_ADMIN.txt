@@ -1,0 +1,23 @@
+PERBAIKAN LOST & FOUND - IFSU
+
+Perbaikan utama:
+1. Layout Admin Panel dirapikan dan dibuat konsisten.
+2. Topbar admin dibuat stabil dan responsif.
+3. Logo IFSU menggunakan asset public/assets/images/ifsu-logo.png secara konsisten.
+4. Typo class logo `ifSU-logo` diperbaiki menjadi `ifsu-logo`.
+5. Sidebar admin tetap mempertahankan menu/fungsi yang sudah ada.
+6. Tampilan tabel, kartu statistik, form, dan area konten admin dibuat tidak mudah overflow.
+7. Layout desktop/tablet/mobile diperbaiki.
+8. Controller, model, API, route, database, dan alur bisnis tidak diubah.
+9. Semua file PHP telah dicek dengan `php -l` dan tidak ditemukan syntax error.
+
+Cara pakai:
+- Extract folder `web_lostfound`.
+- Letakkan di `C:\laragon\www\web_lostfound`.
+- Jalankan Apache + MySQL dari Laragon.
+- Buka http://localhost/web_lostfound
+- Dashboard admin: http://localhost/web_lostfound/admin
+
+Catatan:
+- Pastikan file database/import SQL yang sesuai dengan project tetap digunakan.
+- Jika project dipindahkan ke folder/nama berbeda, sesuaikan BASE_URL di config/config.php.

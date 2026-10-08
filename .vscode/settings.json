@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^Get-ChildItem -File -Recurse \\| Where-Object \\{ \\$_\\.Extension -in '\\.php','\\.sql','\\.css','\\.js' \\} \\| ForEach-Object \\{ \\[PSCustomObject\\]@\\{File=\\$_\\.FullName; Lines=\\(Get-Content \\$_\\.FullName \\| Measure-Object -Line\\)\\.Lines\\} \\} \\| Sort-Object File \\| Format-Table -AutoSize$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
