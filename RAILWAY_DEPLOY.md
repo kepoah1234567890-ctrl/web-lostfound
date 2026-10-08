@@ -50,19 +50,31 @@ Di **Variables** pada layanan aplikasi, tambahkan:
 
 Ganti `MySQL` pada referensi variable dengan nama layanan MySQL Railway yang sebenarnya. Jangan menaruh nilai rahasia di file konfigurasi atau Git.
 
-Untuk menggunakan nama database `lost_found`, pastikan database tersebut sudah dibuat pada MySQL Railway sebelum impor. Jika akun database hanya diberi akses ke database bawaan, gunakan nilai `MYSQLDATABASE` sebagai `DB_DATABASE` (database itu tetap dapat diisi dengan tabel aplikasi Lost & Found).
+Gunakan database yang disediakan layanan MySQL Railway melalui `${{MySQL.MYSQLDATABASE}}` untuk `DB_DATABASE`. Railway biasanya membatasi user ke database tersebut; tidak perlu membuat database bernama `lost_found`.
 
 Untuk fitur yang memakai Google OAuth atau SMTP, masukkan kredensialnya sebagai Railway Variables sesuai konfigurasi. Jangan gunakan kembali kredensial yang pernah ditulis langsung di source code; buat/rotasi secret baru di penyedia terkait.
 
 ## 4. Impor database `lost_found`
 
-Impor dump lokal terbaru ke database MySQL Railway sebelum membuka aplikasi. Di layanan MySQL, aktifkan koneksi TCP publik sementara melalui pengaturan networking, lalu ambil host, port, nama database, username, dan password dari Railway Variables. Dari komputer lokal, jalankan:
+Siapkan struktur database aplikasi di database MySQL Railway. Cara yang disarankan adalah menjalankan initializer aman dari terminal lokal lewat TCP Proxy Railway. Di layanan MySQL, aktifkan koneksi TCP publik sementara melalui pengaturan networking, lalu ambil host TCP Proxy, port, nama database, username, dan password dari Railway Variables.
+
+Di PowerShell pada folder proyek, isi kredensial dengan prompt tersembunyi lalu jalankan initializer. Gunakan nama host dan port **TCP Proxy** untuk koneksi dari komputer lokal:
 
 ```powershell
-mysql --host=<HOST_RAILWAY> --port=<PORT_RAILWAY> --user=<USERNAME> --password <NAMA_DATABASE> < lost_found_backup.sql
+$env:DB_CONNECTION = "mysql"
+$env:DB_HOST = "<HOST_TCP_PROXY>"
+$env:DB_PORT = "<PORT_TCP_PROXY>"
+$env:DB_DATABASE = "<MYSQLDATABASE>"
+$env:DB_USERNAME = "<MYSQLUSER>"
+$securePassword = Read-Host "Railway MySQL password" -AsSecureString
+$env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $securePassword).Password
+php database/migrate.php
+$env:DB_PASSWORD = $null
 ```
 
-Masukkan password ketika diminta. Jika dump belum menyertakan struktur/data yang ingin dipakai, `database/lost_found_current_export.sql` dapat menjadi sumber awal; impor hanya ke database target yang kosong. Jangan jalankan dump awal berulang kali pada database berisi data karena dapat menggandakan data.
+Initializer membuat tabel aplikasi yang belum ada dan tidak menghapus tabel atau data yang sudah ada. Jalankan dari root proyek. Setelah berhasil, nonaktifkan TCP Proxy publik jika tidak diperlukan.
+
+Jika perlu memindahkan data dari database lokal, buat dump terbaru dan impor **setelah** memeriksa target Railway. Pastikan backup tidak berisi data yang tidak ingin dipublikasikan. Jangan mengimpor dump ke database berisi tabel/data yang sama karena dapat menyebabkan konflik atau duplikasi.
 
 Periksa setidaknya tabel `users`, `barang`, `laporan_hilang`, `klaim`, `pengembalian`, dan `aktivitas` (jika ada pada dump yang digunakan). Aplikasi lama memakai skema database tersebut secara langsung; jangan jalankan `php artisan migrate` sebagai pengganti impor skema.
 

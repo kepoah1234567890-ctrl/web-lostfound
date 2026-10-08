@@ -1,6 +1,6 @@
 -- ============================================================
 -- AUDIT & MATCHING LOST & FOUND
--- Jalankan pada database lost_found.
+-- Jalankan pada database aplikasi yang sedang aktif.
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS matching_barang (

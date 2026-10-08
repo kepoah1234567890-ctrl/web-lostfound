@@ -73,24 +73,23 @@ Aplikasi Web **Lost & Found (Barang Hilang & Ditemukan)** resmi untuk lingkungan
 
 ## 4. Pembuatan Database & Import SQL
 
-Proyek ini telah menyediakan dua skrip SQL:
+Proyek ini menyediakan berkas dan skrip berikut:
 - `database/schema.sql` (Struktur tabel DDL)
-- `database/seed.sql` (Data dummy realistis)
-- `database/migrate.php` (Skrip otomatis untuk membuat dan mengisi database)
+- `database/seed.sql` (Data dummy; mengosongkan beberapa tabel sebelum mengisi data)
+- `database/migrate.php` (Membuat tabel yang belum ada tanpa menghapus data atau menjalankan seed)
 
 ### Cara 1: Menggunakan Skrip Otomatis CLI (Paling Cepat)
-Buka terminal PowerShell / Command Prompt dan jalankan:
+Buat database kosong bernama `lost_found` terlebih dahulu, lalu pastikan variabel koneksi di `.env` mengarah ke database tersebut. Buka terminal PowerShell / Command Prompt dari root proyek dan jalankan:
 ```bash
-C:\xampp\php\php.exe database/migrate.php
+C:\xampp\php\php.exe database\migrate.php
 ```
 
 ### Cara 2: Menggunakan phpMyAdmin
 1. Buka browser dan akses `http://localhost/phpmyadmin/`.
 2. Klik menu **Databases**, buat database baru bernama `lost_found` (Collation: `utf8mb4_unicode_ci`), lalu klik **Create**.
 3. Pilih database `lost_found` di panel kiri.
-4. Klik tab **Import** di menu atas.
-5. Klik **Choose File**, pilih file `database/schema.sql`, lalu klik tombol **Import** di bagian bawah.
-6. Ulangi langkah Import untuk file `database/seed.sql`.
+4. Jalankan `database/migrate.php` dari terminal proyek untuk membuat skema dan tabel tambahan tanpa menghapus data.
+5. Jika memang ingin memakai data dummy untuk pengujian, import `database/seed.sql` secara manual. Seed ini mengosongkan beberapa tabel terlebih dahulu, jadi jangan jalankan pada database yang berisi data penting.
 
 ---
 

@@ -1,8 +1,12 @@
 <?php
 /**
- * Safe database initializer/migrator.
- * Tidak menghapus data lama dan tidak menjalankan seed otomatis.
+ * Safe database initializer.
+ * Creates missing tables without deleting existing data or running seeds.
  */
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+Dotenv\Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
+
 require_once dirname(__DIR__) . '/legacy-config/legacy_database.php';
 
 echo "=== Lost & Found — Database Setup ===\n";
@@ -22,11 +26,14 @@ function runSqlFile(PDO $pdo, string $file, string $label): void {
 }
 
 try {
-    $raw = Database::getRawConnection();
-    $raw->exec("CREATE DATABASE IF NOT EXISTS lost_found CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    echo "✔ Database lost_found siap.\n";
-
     $pdo = Database::getConnection();
+    $databaseName = $pdo->query('SELECT DATABASE()')->fetchColumn();
+
+    if (!is_string($databaseName) || $databaseName === '') {
+        throw new RuntimeException('Tidak ada database aktif pada koneksi MySQL.');
+    }
+
+    echo "Database target: {$databaseName}\n";
 
     runSqlFile($pdo, __DIR__ . '/schema.sql', 'schema dasar');
     runSqlFile($pdo, __DIR__ . '/auth_upgrade.sql', 'upgrade authentication');

@@ -2,9 +2,6 @@
 -- Database Schema: Lost & Found SMK Informatika Sumedang
 -- ==========================================================
 
-CREATE DATABASE IF NOT EXISTS lost_found CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE lost_found;
-
 -- 1. Tabel Users
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
