@@ -19,8 +19,11 @@ Panduan ini men-deploy aplikasi Laravel 13, menghubungkannya ke MySQL, dan menja
 
 1. Buat project baru di Railway dan tambahkan layanan **MySQL**.
 2. Tambahkan layanan aplikasi dari repository GitHub yang berisi proyek ini.
-3. Biarkan Railway mendeteksi PHP melalui `composer.json`. [railway.json](railway.json) sudah mengatur perintah server Laravel dan health check `/up`.
-4. Pada layanan aplikasi, buat public domain melalui **Settings → Networking → Generate Domain**.
+3. Pastikan versi PHP build dan runtime minimal **8.3**, sesuai `composer.json`. Lock Composer proyek ini ditargetkan ke PHP 8.3 agar tidak memasang komponen Symfony 8 yang membutuhkan PHP 8.4.
+4. Biarkan Railway mendeteksi PHP melalui `composer.json`. [railway.json](railway.json) sudah mengatur perintah server Laravel dan health check `/up`.
+5. Pada layanan aplikasi, buat public domain melalui **Settings → Networking → Generate Domain**.
+
+Jika mengatur build command sendiri, gunakan `composer install --no-dev --optimize-autoloader --no-interaction`. Jangan gunakan `--ignore-platform-reqs`; opsi itu melewati pemeriksaan versi dan dapat memasang dependency yang tidak kompatibel dengan PHP runtime.
 
 ## 3. Isi variables aplikasi
 
