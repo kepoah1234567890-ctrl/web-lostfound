@@ -72,7 +72,9 @@ php database/migrate.php
 $env:DB_PASSWORD = $null
 ```
 
-Initializer membuat tabel aplikasi yang belum ada dan tidak menghapus tabel atau data yang sudah ada. Jalankan dari root proyek. Setelah berhasil, nonaktifkan TCP Proxy publik jika tidak diperlukan.
+Initializer membuat tabel aplikasi yang belum ada dan tidak menghapus tabel atau data yang sudah ada. Jalankan dari root proyek. Setelah berhasil, nonaktifkan TCP Proxy publik jika tidak diperlukan. Alternatifnya, setelah commit yang berisi migration tersedia, jalankan `php artisan migrate --force` dari shell layanan aplikasi Railway.
+
+Jangan jalankan `php artisan migrate:fresh --seed` pada Railway atau database berisi data penting. Perintah tersebut menghapus semua tabel sebelum membangunnya kembali, dan seeder hanya untuk data contoh/testing.
 
 Jika perlu memindahkan data dari database lokal, buat dump terbaru dan impor **setelah** memeriksa target Railway. Pastikan backup tidak berisi data yang tidak ingin dipublikasikan. Jangan mengimpor dump ke database berisi tabel/data yang sama karena dapat menyebabkan konflik atau duplikasi.
 

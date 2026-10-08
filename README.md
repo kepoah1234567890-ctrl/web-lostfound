@@ -73,10 +73,21 @@ Aplikasi Web **Lost & Found (Barang Hilang & Ditemukan)** resmi untuk lingkungan
 
 ## 4. Pembuatan Database & Import SQL
 
-Proyek ini menyediakan berkas dan skrip berikut:
+Proyek ini menyediakan Laravel migrations dan seeder, serta berkas SQL kompatibilitas:
 - `database/schema.sql` (Struktur tabel DDL)
 - `database/seed.sql` (Data dummy; mengosongkan beberapa tabel sebelum mengisi data)
 - `database/migrate.php` (Membuat tabel yang belum ada tanpa menghapus data atau menjalankan seed)
+- `database/migrations/` (Skema yang dijalankan oleh perintah Artisan)
+- `database/seeders/DatabaseSeeder.php` (Data contoh untuk `db:seed`)
+
+### Membuat ulang database untuk pengembangan
+
+Untuk menghapus seluruh tabel pada database yang dipilih, membuat ulang skema, dan mengisi data contoh:
+```bash
+php artisan migrate:fresh --seed
+```
+
+**Perhatian:** `migrate:fresh` menghapus semua tabel dan data pada database aktif. Gunakan hanya pada database lokal/testing yang boleh dikosongkan, jangan pada Railway atau database berisi data penting. Untuk database produksi yang sudah berisi data, gunakan `php artisan migrate --force` agar hanya migration yang belum dijalankan diproses.
 
 ### Cara 1: Menggunakan Skrip Otomatis CLI (Paling Cepat)
 Buat database kosong bernama `lost_found` terlebih dahulu, lalu pastikan variabel koneksi di `.env` mengarah ke database tersebut. Buka terminal PowerShell / Command Prompt dari root proyek dan jalankan:
@@ -88,8 +99,8 @@ C:\xampp\php\php.exe database\migrate.php
 1. Buka browser dan akses `http://localhost/phpmyadmin/`.
 2. Klik menu **Databases**, buat database baru bernama `lost_found` (Collation: `utf8mb4_unicode_ci`), lalu klik **Create**.
 3. Pilih database `lost_found` di panel kiri.
-4. Jalankan `database/migrate.php` dari terminal proyek untuk membuat skema dan tabel tambahan tanpa menghapus data.
-5. Jika memang ingin memakai data dummy untuk pengujian, import `database/seed.sql` secara manual. Seed ini mengosongkan beberapa tabel terlebih dahulu, jadi jangan jalankan pada database yang berisi data penting.
+4. Jalankan `database/migrate.php` dari terminal proyek untuk membuat skema dan tabel tambahan tanpa menghapus data, atau gunakan Laravel migrations.
+5. Jika memang ingin memakai data dummy, jalankan `php artisan db:seed` hanya pada database kosong/testing. Untuk mengosongkan dan membuat ulang database lokal sekaligus, gunakan `php artisan migrate:fresh --seed` dengan memahami peringatan penghapusan data di atas.
 
 ---
 
