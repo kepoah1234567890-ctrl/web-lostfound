@@ -158,23 +158,25 @@ Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '/api/{endpoi
 })->where('endpoint', '[a-z-]+');
 
 foreach (['forgot-password', 'reset-password', 'set-password'] as $script) {
-    Route::any('/' . $script . '.php', static function () use ($script) {
-        $bufferLevel = ob_get_level();
-        ob_start();
+    foreach ([$script, $script . '.php'] as $routePath) {
+        Route::any('/' . $routePath, static function () use ($script) {
+            $bufferLevel = ob_get_level();
+            ob_start();
 
-        try {
-            require base_path($script . '.php');
-            $content = ob_get_clean();
-        } catch (LegacyRedirectException $exception) {
-            while (ob_get_level() > $bufferLevel) {
-                ob_end_clean();
+            try {
+                require base_path($script . '.php');
+                $content = ob_get_clean();
+            } catch (LegacyRedirectException $exception) {
+                while (ob_get_level() > $bufferLevel) {
+                    ob_end_clean();
+                }
+
+                return redirect()->to($exception->getMessage());
             }
 
-            return redirect()->to($exception->getMessage());
-        }
-
-        return response($content, http_response_code() ?: 200);
-    });
+            return response($content, http_response_code() ?: 200);
+        });
+    }
 }
 
 Route::any('/{path?}', static function (?string $path = null) {

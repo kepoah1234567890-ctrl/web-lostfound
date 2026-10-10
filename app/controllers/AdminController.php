@@ -474,42 +474,13 @@ class AdminController {
 
         try {
             $pdo->beginTransaction();
-            $itemLock = $pdo->prepare('SELECT status FROM barang WHERE id = ? FOR UPDATE');
+            $itemLock = $pdo->prepare('SELECT id FROM barang WHERE id = ? FOR UPDATE');
             $itemLock->execute([$id]);
-            $currentStatus = $itemLock->fetchColumn();
+            $itemExists = $itemLock->fetchColumn();
 
-            if ($currentStatus === false) {
+            if ($itemExists === false) {
                 $pdo->rollBack();
                 setFlash('danger', 'Barang tidak ditemukan.');
-                legacyRedirect('Location: ' . url('admin/barang'));
-                exit;
-            }
-
-            $claimCounts = $pdo->prepare(
-                "SELECT
-                    SUM(CASE WHEN status = 'menunggu' THEN 1 ELSE 0 END) AS pending_count,
-                    SUM(CASE WHEN status = 'disetujui' THEN 1 ELSE 0 END) AS approved_count
-                 FROM klaim WHERE barang_id = ?"
-            );
-            $claimCounts->execute([$id]);
-            $counts = $claimCounts->fetch(PDO::FETCH_ASSOC) ?: [];
-            $pendingClaims = (int)($counts['pending_count'] ?? 0);
-            $approvedClaims = (int)($counts['approved_count'] ?? 0);
-
-            $statusIsValidForClaims = match ($status) {
-                'tersedia' => $pendingClaims === 0 && $approvedClaims === 0,
-                'menunggu_klaim' => $pendingClaims > 0,
-                'diklaim', 'dikembalikan' => $approvedClaims > 0,
-            };
-
-            if (!$statusIsValidForClaims) {
-                $pdo->rollBack();
-                setFlash(
-                    'danger',
-                    'Status tidak bisa diubah: Menunggu Klaim memerlukan klaim yang masih menunggu, '
-                    . 'Diklaim atau Dikembalikan memerlukan klaim yang disetujui, dan Tersedia '
-                    . 'hanya bisa dipilih jika tidak ada klaim aktif.'
-                );
                 legacyRedirect('Location: ' . url('admin/barang'));
                 exit;
             }
