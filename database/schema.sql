@@ -104,3 +104,12 @@ CREATE TABLE IF NOT EXISTS pengembalian (
     FOREIGN KEY (admin_id) REFERENCES users(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Gambar disimpan di MySQL agar tetap tersedia setelah deploy/instance Railway diganti.
+CREATE TABLE IF NOT EXISTS uploaded_files (
+    filename VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin PRIMARY KEY,
+    mime_type VARCHAR(100) NOT NULL,
+    content MEDIUMBLOB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

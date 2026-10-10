@@ -109,6 +109,8 @@ define(
     legacyEnv('UPLOAD_PATH', ROOT_PATH . '/uploads/barang')
 );
 
+require_once ROOT_PATH . '/legacy-config/media_storage.php';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -216,15 +218,25 @@ if (!function_exists('asset')) {
 
 function uploadUrl(?string $filename): string
 {
-    if (
-        $filename !== null
-        && trim($filename) !== ''
-        && is_file(
-            UPLOAD_PATH
-            . DIRECTORY_SEPARATOR
-            . $filename
-        )
-    ) {
+    if ($filename === null || trim($filename) === '') {
+        return BASE_URL . '/public/assets/images/default-item.svg';
+    }
+
+    $filename = trim($filename);
+    if (basename($filename) !== $filename) {
+        return BASE_URL . '/public/assets/images/default-item.svg';
+    }
+
+    static $mediaAvailability = [];
+    $localPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename;
+    $available = is_file($localPath);
+
+    if (!$available) {
+        $mediaAvailability[$filename] ??= uploadedMediaExists($filename);
+        $available = $mediaAvailability[$filename];
+    }
+
+    if ($available) {
         return BASE_URL
             . '/uploads/barang/'
             . rawurlencode($filename);
@@ -581,7 +593,7 @@ function handleFileUpload(
     }
 
     $fileInfo = new finfo(FILEINFO_MIME_TYPE);
-    $mimeType = $fileInfo->file($fileTmpPath);
+    $mimeType = $fileInfo->file($fileTmpPath, FILEINFO_MIME_TYPE);
     if ($mimeType !== $allowedTypes[$fileExtension] || @getimagesize($fileTmpPath) === false) {
         throw new Exception('Isi file tidak sesuai dengan format gambar yang dipilih.');
     }
@@ -601,6 +613,20 @@ function handleFileUpload(
         );
     }
 
+    try {
+        storeUploadedMedia($newFileName, $destination);
+    } catch (Throwable $exception) {
+        if (is_file($destination)) {
+            unlink($destination);
+        }
+
+        error_log('Failed to persist uploaded media: ' . $exception->getMessage());
+        throw new RuntimeException(
+            'Foto gagal disimpan ke database. Silakan coba lagi atau hubungi administrator.',
+            0,
+            $exception
+        );
+    }
 
     if ($oldFilename !== null && trim($oldFilename) !== '') {
         $oldFilename = trim($oldFilename);

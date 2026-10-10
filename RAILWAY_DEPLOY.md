@@ -109,12 +109,27 @@ Setelah impor, nonaktifkan lagi TCP publik jika tidak diperlukan.
 
 ## 5. Simpan foto secara permanen
 
-1. Tambahkan **Volume** pada layanan aplikasi Railway.
-2. Atur mount path ke `/app/uploads`. Variable `UPLOAD_PATH=/app/uploads/barang` harus mengarah ke folder barang di dalam volume tersebut.
-3. Setelah volume aktif, salin isi cadangan `uploads/` lokal ke dalam volume, dengan struktur yang sama (`barang/` dan `avatar/`). Volume baru mengosongkan/menutupi folder pada image deploy, sehingga foto lama perlu disalin sekali.
-4. Pastikan proses PHP bisa membaca dan menulis volume. Foto baru akan disimpan di sana dan dilayani melalui rute upload Laravel.
+Foto baru disimpan di folder upload lokal aplikasi **dan** tabel MySQL `uploaded_files`. Jika file lokal hilang setelah Railway mengganti instance atau deploy ulang, aplikasi mengambil salinan permanen dari MySQL. `railway.json` menjalankan initializer skema yang idempoten sebelum server mulai; initializer tidak menghapus data aplikasi.
 
-Tanpa volume, upload yang dibuat aplikasi dapat hilang saat Railway mengganti instance atau melakukan deploy ulang.
+Untuk menyalin foto yang sudah ada dari komputer lokal ke database Railway:
+
+1. Buat backup database dan rotasi password database jika pernah dibagikan melalui chat, tiket, atau source code.
+2. Aktifkan TCP Proxy MySQL sementara. Dari root project, arahkan environment `DB_HOST`, `DB_PORT`, `DB_DATABASE`, dan `DB_USERNAME` ke kredensial proxy; masukkan password memakai prompt tersembunyi seperti contoh pada bagian impor database.
+3. Pastikan foto lokal lolos validasi tanpa mengubah database:
+
+   ```powershell
+   php artisan lostfound:sync-uploads --dry-run
+   ```
+
+4. Jalankan sinkronisasi. Perintah ini hanya menambah atau memperbarui isi gambar berdasarkan nama file; tidak menghapus foto maupun data aplikasi:
+
+   ```powershell
+   php artisan lostfound:sync-uploads
+   ```
+
+5. Hapus environment password dari terminal dan nonaktifkan TCP Proxy jika tidak diperlukan. Jangan menyimpan kredensial di Git atau memasukkannya langsung ke perintah terminal.
+
+Foto satu file dibatasi sampai 16 MB oleh tipe `MEDIUMBLOB`; batas upload aplikasi tetap 2 MB. Volume Railway tidak lagi diperlukan untuk mempertahankan foto, meskipun boleh dipakai sebagai cache file lokal.
 
 ## 6. Deploy dan tes
 

@@ -379,7 +379,8 @@ function uploadAvatar(
     );
 
     $mimeType = $finfo->file(
-        $tmpName
+        $tmpName,
+        FILEINFO_MIME_TYPE
     );
 
     $allowedMime = [
@@ -461,6 +462,22 @@ function uploadAvatar(
             'success' => false,
             'message' =>
                 'Foto gagal disimpan ke server.'
+        ];
+    }
+
+    try {
+        storeUploadedMedia($filename, $destination);
+    } catch (Throwable $exception) {
+        if (is_file($destination)) {
+            unlink($destination);
+        }
+
+        error_log('Failed to persist uploaded avatar: ' . $exception->getMessage());
+
+        return [
+            'success' => false,
+            'message' =>
+                'Foto gagal disimpan ke database. Silakan coba lagi.'
         ];
     }
 

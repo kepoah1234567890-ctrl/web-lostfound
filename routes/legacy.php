@@ -89,14 +89,44 @@ Route::get('/uploads/{path}', static function (string $path) use ($serveFile) {
     $uploadRoot = realpath(base_path('uploads'));
     $file = realpath(base_path('uploads/' . $path));
 
-    abort_if(
-        $uploadRoot === false
-        || $file === false
-        || !str_starts_with($file, $uploadRoot . DIRECTORY_SEPARATOR),
+    if (
+        $uploadRoot !== false
+        && $file !== false
+        && str_starts_with($file, $uploadRoot . DIRECTORY_SEPARATOR)
+    ) {
+        return $serveFile($file);
+    }
+
+    $segments = explode('/', str_replace('\\', '/', $path));
+    $filename = end($segments);
+    abort_unless(
+        count($segments) === 2
+        && in_array($segments[0], ['barang', 'avatar'], true)
+        && is_string($filename)
+        && $filename !== ''
+        && basename($filename) === $filename,
         404
     );
 
-    return $serveFile($file);
+    require_once base_path('legacy-config/media_storage.php');
+    $media = findUploadedMedia($filename);
+    abort_if($media === null, 404);
+
+    abort_unless(
+        in_array(
+            $media['mime_type'],
+            ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+            true
+        ),
+        415
+    );
+
+    return response($media['content'], 200, [
+        'Content-Type' => $media['mime_type'],
+        'Content-Length' => (string) strlen($media['content']),
+        'Cache-Control' => 'public, max-age=86400',
+        'X-Content-Type-Options' => 'nosniff',
+    ]);
 })->where('path', '.*');
 
 Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '/api/{endpoint}.php', static function (string $endpoint) {

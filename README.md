@@ -30,6 +30,7 @@ Aplikasi Web **Lost & Found (Barang Hilang & Ditemukan)** resmi untuk lingkungan
 - **Arsitektur**: Laravel front controller dengan rute kompatibilitas untuk MVC lama
 - **Autentikasi**: PHP Session + `password_hash()` & `password_verify()`
 - **API**: REST API Native dengan output format JSON standar
+- **Foto upload**: Salinan permanen disimpan di MySQL agar tidak hilang saat Railway deploy ulang.
 
 ### Fitur Utama
 

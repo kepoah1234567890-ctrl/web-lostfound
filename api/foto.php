@@ -53,7 +53,18 @@ $filePath =
     DIRECTORY_SEPARATOR .
     $filename;
 
-if (!is_file($filePath)) {
+if (is_file($filePath)) {
+    $mimeType = mime_content_type($filePath);
+    $fileSize = filesize($filePath);
+    $fileContents = null;
+} else {
+    $media = findUploadedMedia($filename);
+    $mimeType = $media['mime_type'] ?? null;
+    $fileContents = $media['content'] ?? null;
+    $fileSize = is_string($fileContents) ? strlen($fileContents) : null;
+}
+
+if (!is_string($mimeType) || !is_int($fileSize)) {
     http_response_code(404);
 
     echo json_encode([
@@ -64,9 +75,6 @@ if (!is_file($filePath)) {
 
     exit;
 }
-
-$mimeType =
-    mime_content_type($filePath);
 
 $allowedMime = [
     'image/jpeg',
@@ -101,13 +109,17 @@ header(
 
 header(
     'Content-Length: ' .
-    filesize($filePath)
+    $fileSize
 );
 
 header(
     'Cache-Control: public, max-age=86400'
 );
 
-readfile($filePath);
+if (is_string($fileContents)) {
+    echo $fileContents;
+} else {
+    readfile($filePath);
+}
 
 exit;
