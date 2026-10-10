@@ -9,7 +9,7 @@ use Throwable;
 
 class SyncUploadedMedia extends Command
 {
-    protected $signature = 'lostfound:sync-uploads {--dry-run : Validate and count local images without writing to the database}';
+    protected $signature = 'lostfound:sync-uploads {--dry-run : Validate and count local images without writing to the database} {--connection= : Database connection to use}';
 
     protected $description = 'Copy existing local uploaded images to the configured MySQL database';
 
@@ -59,7 +59,7 @@ class SyncUploadedMedia extends Command
         }
 
         try {
-            $connection = DB::connection();
+            $connection = DB::connection($this->option('connection'));
             $connection->table('uploaded_files');
 
             foreach ($validated as $media) {

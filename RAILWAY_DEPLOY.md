@@ -109,6 +109,41 @@ Setelah impor, nonaktifkan lagi TCP publik jika tidak diperlukan.
 
 ## 5. Simpan foto secara permanen
 
+### Menyalin seluruh database lokal dan foto ke Railway
+
+Gunakan perintah `lostfound:copy-local-to-railway` jika ingin mengganti isi tabel aplikasi Railway dengan struktur/schema terbaru, seluruh data lokal, dan foto di folder `uploads/`. Perintah ini mempertahankan koneksi `DB_*` lokal sebagai sumber dan hanya menggunakan `RAILWAY_DB_URL` untuk tujuan. Ia hanya menerima host lokal sebagai sumber, menolak host `.railway.internal` dari komputer lokal, dan meminta konfirmasi sebelum menghapus isi tabel Railway yang dikenal.
+
+Sebelum memulai:
+
+1. Rotasi password MySQL jika pernah ditempel di chat. Perbarui juga Railway Variables service aplikasi agar web tetap memakai kredensial baru.
+2. Pastikan `DB_HOST`, `DB_PORT`, `DB_DATABASE`, dan `DB_USERNAME` di `.env` menunjuk ke MySQL lokal yang berisi data sumber. Jangan timpa konfigurasi sumber dengan detail Railway.
+3. Buat backup database Railway dan folder `uploads/`. Proses `--replace` menghapus isi tabel aplikasi tujuan sebelum menyalin data lokal.
+4. Ambil host/port TCP Proxy Railway yang aktif. `*.railway.internal` hanya dapat diakses dari jaringan Railway, bukan terminal Laragon lokal.
+
+Dari PowerShell di root proyek, masukkan detail koneksi tujuan. Password diketik di prompt tersembunyi dan tidak dicetak:
+
+```powershell
+$proxyHost = Read-Host "Host TCP Proxy Railway"
+$proxyPort = Read-Host "Port TCP Proxy Railway"
+$database = Read-Host "Nama database Railway"
+$username = Read-Host "Username MySQL Railway"
+$securePassword = Read-Host "Password MySQL Railway" -AsSecureString
+$password = [System.Net.NetworkCredential]::new("", $securePassword).Password
+$env:RAILWAY_DB_URL = "mysql://$([uri]::EscapeDataString($username)):$([uri]::EscapeDataString($password))@$($proxyHost):$proxyPort/$([uri]::EscapeDataString($database))"
+$password = $null
+
+php artisan lostfound:copy-local-to-railway --dry-run
+```
+
+Pastikan dry-run menyebut koneksi Railway yang benar, menampilkan tabel/baris sumber yang diharapkan, serta jumlah foto lokal yang valid. Jika benar, jalankan:
+
+```powershell
+php artisan lostfound:copy-local-to-railway --replace
+Remove-Item Env:RAILWAY_DB_URL
+```
+
+Perintah meminta konfirmasi karena penggantian isi Railway bersifat destruktif. Bila autentikasi atau pemeriksaan kompatibilitas gagal, hentikan proses dan jangan lanjutkan dengan perintah import lain. Jangan kirim URL koneksi atau password ke chat dan jangan commit file `.env`.
+
 Foto baru disimpan di folder upload lokal aplikasi **dan** tabel MySQL `uploaded_files`. Jika file lokal hilang setelah Railway mengganti instance atau deploy ulang, aplikasi mengambil salinan permanen dari MySQL. `railway.json` menjalankan initializer skema yang idempoten sebelum server mulai; initializer tidak menghapus data aplikasi.
 
 Untuk menyalin foto yang sudah ada dari komputer lokal ke database Railway:
