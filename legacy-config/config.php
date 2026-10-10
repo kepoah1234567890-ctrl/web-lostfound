@@ -389,18 +389,6 @@ function apiRequireLogin(): array
         exit;
     }
 
-    $clientPlatform = strtolower(trim((string)($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? '')));
-    if ($clientPlatform === 'mobile' && ($user['role'] ?? '') === 'admin' && !isImpersonating()) {
-        http_response_code(403);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Akun admin hanya dapat mengakses user melalui website.',
-            'data' => null,
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
     return $user;
 }
 

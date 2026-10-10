@@ -121,16 +121,6 @@ if (
     );
 }
 
-$clientPlatform = strtolower(trim((string)($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? '')));
-if ($clientPlatform === 'mobile' && ($sessionUser['role'] ?? '') === 'admin' && !isImpersonating()) {
-    responseJson(
-        false,
-        'Akun admin hanya dapat mengakses user melalui website.',
-        null,
-        403
-    );
-}
-
 $userId = (int) $sessionUser['id'];
 
 // =====================================================
