@@ -59,32 +59,64 @@ if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             return $id;
         },
         function (string $id): string {
-            global $pdo;
-            if (!$pdo) return '';
-            $stmt = $pdo->prepare('SELECT payload FROM sessions WHERE id = ?');
-            $stmt->execute([$id]);
-            return (string) $stmt->fetchColumn();
+            try {
+                $pdo = new PDO(
+                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
+                    legacyEnv('DB_USERNAME', 'root'),
+                    legacyEnv('DB_PASSWORD', ''),
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+                $stmt = $pdo->prepare('SELECT payload FROM sessions WHERE id = ?');
+                $stmt->execute([$id]);
+                return (string) $stmt->fetchColumn();
+            } catch (Exception $e) {
+                return '';
+            }
         },
         function (string $id, string $data): bool {
-            global $pdo;
-            if (!$pdo) return false;
-            $stmt = $pdo->prepare(
-                'INSERT INTO sessions (id, payload, last_activity) VALUES (?, ?, ?)
-                 ON DUPLICATE KEY UPDATE payload = VALUES(payload), last_activity = VALUES(last_activity)'
-            );
-            return $stmt->execute([$id, $data, time()]);
+            try {
+                $pdo = new PDO(
+                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
+                    legacyEnv('DB_USERNAME', 'root'),
+                    legacyEnv('DB_PASSWORD', ''),
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+                $stmt = $pdo->prepare(
+                    'INSERT INTO sessions (id, payload, last_activity) VALUES (?, ?, ?)
+                     ON DUPLICATE KEY UPDATE payload = VALUES(payload), last_activity = VALUES(last_activity)'
+                );
+                return $stmt->execute([$id, $data, time()]);
+            } catch (Exception $e) {
+                return false;
+            }
         },
         function (string $id): bool {
-            global $pdo;
-            if (!$pdo) return false;
-            $stmt = $pdo->prepare('DELETE FROM sessions WHERE id = ?');
-            return $stmt->execute([$id]);
+            try {
+                $pdo = new PDO(
+                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
+                    legacyEnv('DB_USERNAME', 'root'),
+                    legacyEnv('DB_PASSWORD', ''),
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+                $stmt = $pdo->prepare('DELETE FROM sessions WHERE id = ?');
+                return $stmt->execute([$id]);
+            } catch (Exception $e) {
+                return false;
+            }
         },
         function (int $maxlifetime): string {
-            global $pdo;
-            if (!$pdo) return '';
-            $pdo->prepare('DELETE FROM sessions WHERE last_activity < ?')->execute([time() - $maxlifetime]);
-            return '';
+            try {
+                $pdo = new PDO(
+                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
+                    legacyEnv('DB_USERNAME', 'root'),
+                    legacyEnv('DB_PASSWORD', ''),
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+                $pdo->prepare('DELETE FROM sessions WHERE last_activity < ?')->execute([time() - $maxlifetime]);
+                return '';
+            } catch (Exception $e) {
+                return '';
+            }
         },
         function (): string|false {
             return '';
