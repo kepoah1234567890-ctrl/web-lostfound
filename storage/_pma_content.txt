@@ -1,0 +1,36 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 682E-6578
+
+ Directory of C:\laragon\etc\apps\phpMyAdmin
+
+10/10/2026  05:24    <DIR>          .
+10/10/2026  05:24    <DIR>          ..
+07/02/2023  16:26                20 .rtlcssrc.json
+07/02/2023  16:26                69 babel.config.json
+07/02/2023  16:26            71.006 ChangeLog
+07/02/2023  16:26             5.323 composer.json
+07/02/2023  16:26           305.844 composer.lock
+07/02/2023  16:26             4.810 config.sample.inc.php
+07/02/2023  16:26             2.587 CONTRIBUTING.md
+10/10/2026  05:22    <DIR>          doc
+10/10/2026  05:22    <DIR>          examples
+07/02/2023  16:26            22.486 favicon.ico
+07/02/2023  16:26             1.074 index.php
+10/10/2026  05:22    <DIR>          js
+10/10/2026  05:22    <DIR>          libraries
+07/02/2023  16:26            18.092 LICENSE
+10/10/2026  05:23    <DIR>          locale
+07/02/2023  16:26             2.787 package.json
+07/02/2023  16:26             1.520 README
+07/02/2023  16:26                29 RELEASE-DATE-5.2.1
+07/02/2023  16:26                26 robots.txt
+10/10/2026  05:23    <DIR>          setup
+07/02/2023  16:26             1.153 show_config_errors.php
+10/10/2026  05:23    <DIR>          sql
+10/10/2026  05:23    <DIR>          templates
+10/10/2026  05:23    <DIR>          themes
+07/02/2023  16:26               965 url.php
+10/10/2026  05:24    <DIR>          vendor
+07/02/2023  16:26           253.106 yarn.lock
+              17 File(s)        690.897 bytes
+              12 Dir(s)  75.331.653.632 bytes free

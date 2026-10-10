@@ -1,0 +1,14 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 682E-6578
+
+ Directory of C:\laragon\etc\apps
+
+10/10/2026  05:24    <DIR>          .
+10/10/2026  00:13    <DIR>          ..
+10/10/2026  00:13    <DIR>          adminer
+10/10/2026  00:13    <DIR>          laragon
+10/10/2026  00:13    <DIR>          memcached
+10/10/2026  05:24    <DIR>          phpMyAdmin
+10/10/2026  00:13    <DIR>          phpRedisAdmin
+               0 File(s)              0 bytes
+               7 Dir(s)  75.354.583.040 bytes free

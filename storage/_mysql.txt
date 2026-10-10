@@ -1,0 +1,10 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 682E-6578
+
+ Directory of C:\laragon\bin\mysql
+
+10/10/2026  00:11    <DIR>          .
+10/10/2026  00:13    <DIR>          ..
+10/10/2026  05:05    <DIR>          mysql-8.0.30-winx64
+               0 File(s)              0 bytes
+               3 Dir(s)  75.354.587.136 bytes free

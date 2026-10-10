@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS lost_found CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+SHOW DATABASES;
+SELECT NOW() AS server_time;

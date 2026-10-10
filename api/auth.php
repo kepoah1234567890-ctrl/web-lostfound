@@ -590,15 +590,6 @@ try {
             );
         }
 
-        if (($user['role'] ?? '') !== 'siswa') {
-            responseJson(
-                false,
-                'Akun admin hanya dapat mengakses user melalui website.',
-                null,
-                403
-            );
-        }
-
         session_regenerate_id(true);
         unset($_SESSION['impersonation']);
 

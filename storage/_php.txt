@@ -1,0 +1,10 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 682E-6578
+
+ Directory of C:\laragon\bin\php
+
+10/10/2026  00:12    <DIR>          .
+10/10/2026  00:13    <DIR>          ..
+10/10/2026  00:13    <DIR>          php-8.1.10-Win32-vs16-x64
+               0 File(s)              0 bytes
+               3 Dir(s)  75.354.583.040 bytes free
