@@ -165,6 +165,8 @@ class BarangController {
                         legacyRedirect('Location: ' . url('barang'));
                     }
                     exit;
+                } catch (LegacyRedirectException $e) {
+                    throw $e;
                 } catch (Exception $e) {
                     $error = $e->getMessage();
                 }
@@ -224,6 +226,8 @@ class BarangController {
                     setFlash('success', 'Data barang berhasil diperbarui.');
                     legacyRedirect('Location: ' . url('admin/barang'));
                     exit;
+                } catch (LegacyRedirectException $e) {
+                    throw $e;
                 } catch (Exception $e) {
                     $error = $e->getMessage();
                 }

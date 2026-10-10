@@ -406,6 +406,8 @@ class AdminController {
                     setFlash('success', 'Data barang berhasil diperbarui.');
                     legacyRedirect('Location: ' . url('admin/barang'));
                     exit;
+                } catch (LegacyRedirectException $e) {
+                    throw $e;
                 } catch (Throwable $e) {
                     $error = $e->getMessage();
                 }
