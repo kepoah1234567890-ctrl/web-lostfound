@@ -504,7 +504,12 @@ class AdminController {
 
             if (!$statusIsValidForClaims) {
                 $pdo->rollBack();
-                setFlash('danger', 'Status barang tidak sesuai dengan status klaim aktif.');
+                setFlash(
+                    'danger',
+                    'Status tidak bisa diubah: Menunggu Klaim memerlukan klaim yang masih menunggu, '
+                    . 'Diklaim atau Dikembalikan memerlukan klaim yang disetujui, dan Tersedia '
+                    . 'hanya bisa dipilih jika tidak ada klaim aktif.'
+                );
                 legacyRedirect('Location: ' . url('admin/barang'));
                 exit;
             }
@@ -523,6 +528,8 @@ class AdminController {
                 'metadata' => ['actor_role' => 'admin', 'status_baru' => $status]
             ]);
             setFlash('success', 'Status barang berhasil diperbarui menjadi ' . ucfirst($status) . '.');
+        } catch (LegacyRedirectException $e) {
+            throw $e;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
