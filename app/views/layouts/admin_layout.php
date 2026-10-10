@@ -114,16 +114,16 @@ $adminJsVersion = file_exists(PUBLIC_PATH . '/assets/js/admin.js')
 
                 <div class="admin-sidebar-label">Manajemen</div>
                 <ul class="admin-sidebar-nav">
-                    <?php foreach ($adminNav as $item): ?>
-                        <?php if ($item['route'] === 'admin') continue; ?>
+                    <?php foreach ($adminNav as $navItem): ?>
+                        <?php if ($navItem['route'] === 'admin') continue; ?>
                         <?php
-                        $isActive = in_array($currentRoute, $item['match'], true)
-                            || strpos($currentRoute, $item['route']) === 0;
+                        $isActive = in_array($currentRoute, $navItem['match'], true)
+                            || strpos($currentRoute, $navItem['route']) === 0;
                         ?>
                         <li>
-                            <a href="<?= url($item['route']) ?>" class="admin-nav-link <?= $isActive ? 'active' : '' ?>">
-                                <i class="bi bi-<?= $item['icon'] ?>"></i>
-                                <span><?= e($item['label']) ?></span>
+                            <a href="<?= url($navItem['route']) ?>" class="admin-nav-link <?= $isActive ? 'active' : '' ?>">
+                                <i class="bi bi-<?= $navItem['icon'] ?>"></i>
+                                <span><?= e($navItem['label']) ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>

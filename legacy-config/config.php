@@ -50,78 +50,49 @@ if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
         'samesite' => 'Lax',
     ]);
 
-    // Database session handler untuk Railway container stateless
-    session_set_save_handler(
-        function (string $save_path, string $session_name): string {
-            return $save_path;
-        },
-        function (string $id, bool $read_only): string {
-            return $id;
-        },
-        function (string $id): string {
-            try {
-                $pdo = new PDO(
-                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
-                    legacyEnv('DB_USERNAME', 'root'),
-                    legacyEnv('DB_PASSWORD', ''),
-                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    if (legacyEnv('SESSION_DRIVER', 'file') === 'database') {
+        require_once __DIR__ . '/legacy_database.php';
+
+        session_set_save_handler(
+            static function (string $savePath, string $sessionName): bool {
+                return true;
+            },
+            static function (): bool {
+                return true;
+            },
+            static function (string $id): string {
+                $statement = Database::getConnection()->prepare(
+                    'SELECT payload FROM sessions WHERE id = ?'
                 );
-                $stmt = $pdo->prepare('SELECT payload FROM sessions WHERE id = ?');
-                $stmt->execute([$id]);
-                return (string) $stmt->fetchColumn();
-            } catch (Exception $e) {
-                return '';
-            }
-        },
-        function (string $id, string $data): bool {
-            try {
-                $pdo = new PDO(
-                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
-                    legacyEnv('DB_USERNAME', 'root'),
-                    legacyEnv('DB_PASSWORD', ''),
-                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-                );
-                $stmt = $pdo->prepare(
+                $statement->execute([$id]);
+
+                return (string) ($statement->fetchColumn() ?: '');
+            },
+            static function (string $id, string $data): bool {
+                $statement = Database::getConnection()->prepare(
                     'INSERT INTO sessions (id, payload, last_activity) VALUES (?, ?, ?)
                      ON DUPLICATE KEY UPDATE payload = VALUES(payload), last_activity = VALUES(last_activity)'
                 );
-                return $stmt->execute([$id, $data, time()]);
-            } catch (Exception $e) {
-                return false;
-            }
-        },
-        function (string $id): bool {
-            try {
-                $pdo = new PDO(
-                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
-                    legacyEnv('DB_USERNAME', 'root'),
-                    legacyEnv('DB_PASSWORD', ''),
-                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+
+                return $statement->execute([$id, $data, time()]);
+            },
+            static function (string $id): bool {
+                $statement = Database::getConnection()->prepare(
+                    'DELETE FROM sessions WHERE id = ?'
                 );
-                $stmt = $pdo->prepare('DELETE FROM sessions WHERE id = ?');
-                return $stmt->execute([$id]);
-            } catch (Exception $e) {
-                return false;
-            }
-        },
-        function (int $maxlifetime): string {
-            try {
-                $pdo = new PDO(
-                    'mysql:host=' . legacyEnv('DB_HOST', '127.0.0.1') . ';port=' . legacyEnv('DB_PORT', '3306') . ';dbname=' . legacyEnv('DB_DATABASE', 'lost_found'),
-                    legacyEnv('DB_USERNAME', 'root'),
-                    legacyEnv('DB_PASSWORD', ''),
-                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+
+                return $statement->execute([$id]);
+            },
+            static function (int $maxLifetime): int|false {
+                $statement = Database::getConnection()->prepare(
+                    'DELETE FROM sessions WHERE last_activity < ?'
                 );
-                $pdo->prepare('DELETE FROM sessions WHERE last_activity < ?')->execute([time() - $maxlifetime]);
-                return '';
-            } catch (Exception $e) {
-                return '';
+                $statement->execute([time() - $maxLifetime]);
+
+                return $statement->rowCount();
             }
-        },
-        function (): string|false {
-            return '';
-        }
-    );
+        );
+    }
 
     session_start();
 }
