@@ -176,3 +176,15 @@ Foto satu file dibatasi sampai 16 MB oleh tipe `MEDIUMBLOB`; batas upload aplika
 6. Jika koneksi gagal, cocokkan `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` aplikasi dengan variable layanan MySQL. Jangan menampilkan password di issue atau log publik.
 
 Untuk perubahan kode berikutnya, commit dan push ke GitHub; Railway akan membangun deployment baru. Backup database MySQL dan isi Volume secara berkala.
+
+## 7. Hubungkan Aplikasi Flutter dan Unduhan APK
+
+Aplikasi Flutter memakai API Railway `https://web-lostfound-production.up.railway.app/api/` secara default. Jika domain Railway berubah, bangun ulang APK dengan `--dart-define=LOST_FOUND_SERVER_BASE_URL=https://<domain-railway>` agar aplikasi memakai domain yang benar. Login Flutter menggunakan sesi API yang sama; akun admin memang khusus login melalui website.
+
+Untuk mengaktifkan tombol unduh aplikasi di website:
+
+1. Bangun APK Android release dari project Flutter (`flutter build apk --release`).
+2. Sediakan file APK pada filesystem service web Railway, misalnya melalui volume Railway, lalu set variable `MOBILE_APP_APK_PATH` ke path absolut file tersebut. Tanpa variable ini, website mencari `storage/app/mobile/app-release.apk` di dalam service.
+3. Set `MOBILE_APP_VERSION` jika nama file unduhan ingin menyertakan nomor versi. Pastikan file terbaca oleh service web; endpoint unduhan akan menampilkan 404 jika APK belum tersedia.
+
+Tombol unduh di beranda dan navigasi akan memberi konfirmasi bahwa APK hanya dapat dipasang di Android. Pengguna iOS dapat tetap memakai website.

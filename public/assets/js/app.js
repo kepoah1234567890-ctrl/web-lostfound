@@ -4,6 +4,17 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // APK download is Android-only; make this clear before starting the download.
+    const androidApkLinks = document.querySelectorAll('[data-android-apk-download]');
+    androidApkLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            const message = 'File APK hanya dapat dipasang di Android. Admin tetap menggunakan website. Lanjutkan mengunduh?';
+            if (!confirm(message)) {
+                event.preventDefault();
+            }
+        });
+    });
+
     // 1. Image Preview on File Input Change
     const imageInputs = document.querySelectorAll('input[type="file"][data-preview]');
     imageInputs.forEach(input => {

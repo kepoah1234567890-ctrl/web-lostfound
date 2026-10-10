@@ -19,6 +19,13 @@
                     <a href="<?= url('laporkan-ditemukan') ?>" class="btn btn-pastel-green btn-rounded py-2 px-4 shadow-sm fw-semibold">
                         <i class="bi bi-plus-circle me-2"></i> Saya Menemukan Barang
                     </a>
+                    <a href="<?= url('download-app') ?>" class="btn btn-outline-primary btn-rounded py-2 px-4 shadow-sm fw-semibold" data-android-apk-download>
+                        <i class="bi bi-download me-2"></i> Download Aplikasi
+                    </a>
+                </div>
+                <div class="alert alert-info border-0 rounded-4 py-2 px-3 small text-start" role="alert">
+                    <i class="bi bi-android2 me-1"></i>
+                    APK hanya dapat dipasang di Android. Admin tetap mengakses panel melalui website.
                 </div>
 
                 <!-- Search Bar -->

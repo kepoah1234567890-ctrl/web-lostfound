@@ -590,6 +590,25 @@ try {
             );
         }
 
+        $clientPlatform = strtolower(trim((string) (
+            $_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? ''
+        )));
+        if (
+            in_array($clientPlatform, ['mobile', 'android', 'ios'], true)
+            && in_array(
+                strtolower(trim((string) ($user['role'] ?? ''))),
+                ['admin', 'administrator'],
+                true
+            )
+        ) {
+            responseJson(
+                false,
+                'Akun admin hanya dapat masuk melalui website.',
+                null,
+                403
+            );
+        }
+
         session_regenerate_id(true);
         unset($_SESSION['impersonation']);
 

@@ -55,6 +55,11 @@ $flash = getFlash();
                         <i class="bi bi-info-circle me-1"></i> Cara Klaim
                     </a>
                 </li>
+                <li class="nav-link-item">
+                    <a class="nav-link" href="<?= url('download-app') ?>" data-android-apk-download>
+                        <i class="bi bi-android2 me-1"></i> Aplikasi Android
+                    </a>
+                </li>
             </ul>
 
             <!-- Auth Actions -->
