@@ -50,6 +50,47 @@ if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
         'samesite' => 'Lax',
     ]);
 
+    // Database session handler untuk Railway container stateless
+    session_set_save_handler(
+        function (string $save_path, string $session_name): string {
+            return $save_path;
+        },
+        function (string $id, bool $read_only): string {
+            return $id;
+        },
+        function (string $id): string {
+            global $pdo;
+            if (!$pdo) return '';
+            $stmt = $pdo->prepare('SELECT payload FROM sessions WHERE id = ?');
+            $stmt->execute([$id]);
+            return (string) $stmt->fetchColumn();
+        },
+        function (string $id, string $data): bool {
+            global $pdo;
+            if (!$pdo) return false;
+            $stmt = $pdo->prepare(
+                'INSERT INTO sessions (id, payload, last_activity) VALUES (?, ?, ?)
+                 ON DUPLICATE KEY UPDATE payload = VALUES(payload), last_activity = VALUES(last_activity)'
+            );
+            return $stmt->execute([$id, $data, time()]);
+        },
+        function (string $id): bool {
+            global $pdo;
+            if (!$pdo) return false;
+            $stmt = $pdo->prepare('DELETE FROM sessions WHERE id = ?');
+            return $stmt->execute([$id]);
+        },
+        function (int $maxlifetime): string {
+            global $pdo;
+            if (!$pdo) return '';
+            $pdo->prepare('DELETE FROM sessions WHERE last_activity < ?')->execute([time() - $maxlifetime]);
+            return '';
+        },
+        function (): string|false {
+            return '';
+        }
+    );
+
     session_start();
 }
 

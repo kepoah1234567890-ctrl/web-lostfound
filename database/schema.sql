@@ -113,3 +113,12 @@ CREATE TABLE IF NOT EXISTS uploaded_files (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Sessions table untuk Railway container stateless
+CREATE TABLE IF NOT EXISTS sessions (
+    id VARCHAR(255) NOT NULL PRIMARY KEY,
+    user_id INT,
+    payload TEXT NOT NULL,
+    last_activity INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
