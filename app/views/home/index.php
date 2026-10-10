@@ -25,7 +25,7 @@
                 </div>
                 <div class="alert alert-info border-0 rounded-4 py-2 px-3 small text-start" role="alert">
                     <i class="bi bi-android2 me-1"></i>
-                    APK hanya dapat dipasang di Android. Admin tetap mengakses panel melalui website.
+                    APK hanya dapat dipasang di Android.
                 </div>
 
                 <!-- Search Bar -->
